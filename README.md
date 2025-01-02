@@ -9,14 +9,19 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
 ©️ [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
 
 ## Table of Contents
-- Prerequisites
-- Setup
-- Commands
-   - download
-   - process
-   - sample
-   - train
-- Configurations
+- [Prerequisites](Prerequisites)
+- [Setup](Setup)
+- [Commands](Commands)
+   - [download](download)
+   - [process](process)
+   - [sample](sample)
+   - [train](train)
+- [Configurations](Configurations)
+   - Paths
+   - Download Settings
+   - Processing Settings
+   - Sampling Settings
+   - Model Training Settings
 - OOM Errors
 
 ## Prerequisites
@@ -140,7 +145,7 @@ The file contains the configurations used in the paper but can be easily edited 
 
 Below is a detailed description of all available configuration settings.
 
-#### [Paths Configuration](config.yml#L1)
+#### [Paths](config.yml#L1)
 | Field | Description |
 |-------|-------------|
 | `paths.loan_data` | Directory for raw Freddie Mac loan data files |

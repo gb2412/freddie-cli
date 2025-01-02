@@ -26,7 +26,7 @@ Author: [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
 Freddie CLI is based on four simple commands that execute Python scripts from the corresponding folders.
 
 ### [`download`](download/)
-Download Freddie Mac's Single Family Loan-Level Dataset for the quarters specified in the [configurations](config.py). 
+Download Freddie Mac's Single Family Loan-Level Dataset for the quarters specified in the [configurations](#Configurations). 
 
 If a quarter has already been downloaded, it is skipped by default.
 
@@ -109,9 +109,21 @@ freddie sample --binary # Create binary sets
 ### [`train`](train/)
 Train and save custom models on the sampled training set.
 
+The repo contains training scripts for sparse GAM, Random Forest, and XGBoost. 
+Custom training scripts can be created in the following steps:
+1. Define the model name and parameters in the configurations [file](config.py)
+2. Create a script in the [train](train/) as `<model_name>.py`. Use the same name as in the configuration.
+3. The script should import the training set, fit the model, and save it. Use the existing scripts as templates. 
 
+| Option         | Short | Description              |
+| -------------- | ----- | ------------------------ |
+| --model | -m | Pass the name of the model to be trained |
 
+```bash
+freddie train --model 'model_name'  # Process training and test sets
+```
 
+## Configurations
 
 
 

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "freddie-cli"
+version = "0.1.0"
+description = "CLI tool for downloading, processing and train ML models on Freddie Mac loan data"
+authors = [{ name = "Giulio Bellini"}]
+requires-python = ">=3.8"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.scripts]
+freddie = "freddie_cli.cli:main"
+
+[tool.setuptools]
+package-dir = {""= "."}
+packages = ["freddie_cli"]

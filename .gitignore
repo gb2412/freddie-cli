@@ -1,0 +1,13 @@
+# Ignore non-code folders
+data/
+
+# Ignore vscode configs
+.vscode/
+
+# Ignore env file
+.env
+
+freddie_cli.egg-info/
+
+# Ignore all __pycache__ folders
+**/__pycache__/

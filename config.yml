@@ -1,0 +1,119 @@
+# Files paths
+paths:
+  loan_data: "data/freddie_mac"
+  processed_data: "data/processed"
+  economic_data: "data/economic"
+  dev_sample: "data/dev_sample"
+  models_dir: "models"
+
+# Data collection settings
+download:
+  login_page_url: 'https://freddiemac.embs.com/FLoan/secure/login.php'
+  auth_page_url: 'https://freddiemac.embs.com/FLoan/secure/auth.php'
+  download_page_url: 'https://freddiemac.embs.com/FLoan/Data/downloadQ.php'
+
+# Data processing settings
+process:
+  mode: "start_end"  # Options: "list" or "start_end"
+  start_end: # Required if mode is "start_end"
+    start: [2015, 1]
+    end: [2018, 4]
+  years_quarters_list: # Required if mode is "list"
+    - [2015, 1]
+    - [2015, 2]
+    - [2015, 3]
+    - [2015, 4]
+    - [2016, 1]
+    - [2016, 2]
+    - [2016, 3]
+    - [2016, 4]
+    - [2017, 1]
+    - [2017, 2]
+    - [2017, 3]
+    - [2017, 4]
+    - [2018, 1]
+    - [2018, 2]
+    - [2018, 3]
+    - [2018, 4]
+  batch_size: 50000 # Number of loans to process at a time
+
+sample:
+  include_economic_data: True # True if you want to process economic data
+  train_obs_dates:
+    - "2021-03"
+    - "2021-06" 
+    - "2021-09"
+    - "2021-12"
+  test_obs_dates:
+    - "2022-03"
+    - "2022-06"
+  train_size: 1500000
+  dev_columns: # Features to include in the development dataset
+    mortgage_columns:
+      - Loan_Num
+      - Month
+      - Default
+      - Credit_Score
+      - First_Time_Home_Buyer_Flag
+      - MI_Percentage
+      - Occupancy_Status
+      - CLTV
+      - DTI
+      - Log_UPB
+      - LTV
+      - Int_Rate
+      - Channel
+      - Prepay_Penalty
+      - Amortization_Type
+      - Property_Type
+      - Loan_Purpose
+      - Num_Borrowers
+      - Sup_Conforming_Flag
+      - Property_Val_Meth
+      - Int_Only_Indicator
+      - Log_Curr_UPB
+      - Current_Delinquency_Status
+      - Modification_Flag
+      - Current_Int_Rate
+      - Log_Non_Int_Bear_UPB
+      - Step_Modification_Flag
+      - Payment_Deferral_Flag
+      - ELTV
+      - Delinquency_Disaster_Flag
+      - Borrower_Assistance_Status_Code
+      - Max_Delinq_Severity_yoy
+      - Num_Modifications_yoy
+      - Delinq_Status_0_Count
+      - Delinq_Status_1_Count
+      - Delinq_Status_2_Count
+      - Payment_Ratio
+      - Balance_Per_Month
+      - Maturity_Progress
+      - ZIP_Default_Rate
+    economic_columns:
+      - Unemp_Rate
+      - Log_Median_Ann_Income
+      - Infl_Rate
+      - US_30yr_FRM
+      - US_30yr_FRM_Orig
+      - HPI_Change_Orig
+      - HPI_Change_yoy
+      - Int_Rate_Diff
+      - Curr_Int_Rate_Diff
+
+# Model fitting settings 
+train:
+  sparse_gam:
+    loss: "Logistic"
+    penalty: 'L0'
+    max_support_size: 40
+    num_lambda: 150
+    algorithm: "CDPSI"
+    scale_down_factor: 0.8
+ # Add new models and their respective parameters like this:
+  # model_name:
+  #   parameter_1: "value_1"
+  #   parameter_2: value_2
+
+
+    

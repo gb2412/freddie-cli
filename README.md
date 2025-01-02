@@ -2,17 +2,17 @@
 A simple CLI to download, process, and train ML models on the [Freddie Mac's Single Family Loan-Level Dataset](https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset).
 
 Freddie CLI has been developed during the realization of the following research paper: Interpretable Machine Learning in Credit Risk Modelling. 
-The CLI is a very useful tool for anyone interacting with Freddie Mac's data for analysis and model development.
+The CLI is a handy tool for anyone interacting with Freddie Mac's data for analysis and model development.
 
 Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.com/en/stable/).
 
 Author: [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
 
 ## Prerequisites
-**[Python](https://www.python.org/downloads/) 3.8 or higher**: To train sparse GAM models with the fastsparsegams library as in the paper, Python 3.8-3.11 is required.
+**[Python](https://www.python.org/downloads/) 3.8 or higher**: To train sparse GAM models with the [fastsparsegams](https://pypi.org/project/fastsparsegams/) library as in the paper, Python 3.8-3.11 is required.
 
 ## Setup
-1. **Clone the repository**: Open a terminal, navigate to your desired directory, and colne the repository using:
+1. **Clone the repository**: Open a terminal, navigate to your desired directory, and clone the repository using:
    ```bash
    git clone https://github.com/gb2412/freddie-cli.git
    cd freddie-cli
@@ -41,10 +41,10 @@ freddie download --refresh  # Re-download all quarters
 
 ### [`process`](process/)
 Process the dataset by:
-1. Uploading origination and monthly performance data by quarter as a polars dataframe.
+1. Uploading origination and monthly performance data by quarter as a [polars](https://pola.rs/) dataframe.
 2. Setting dataframe schemas.
 3. Encoding missing values and enums according to the dataset documentation.
-4. Creating the binary target variable to develop PD models according to the definition of default defined in the paper.
+4. Creating the binary target variable to develop PD models according to the definition of default provided in the paper.
 5. Creating new features.
 6. Saving dataframes as parquet files.
 
@@ -60,6 +60,22 @@ freddie process --refresh  # Re-download all quarters
 ```
 
 ### [`sample`](sample/)
+Create training and test sets by sampling from the processed data.
+
+Optionally, the dataset can be enriched with economic data. 
+The following economic time series are available under [data/economic](data/economic/) up to June 2024.
+
+| Name           | Schema | Description              | Source |
+| -------------- | -----  | ------------------------ | ------ |
+| BLS_Income.csv| Month, State, Median_Ann_Income| Median annual income by state | [BLS OEWS](https://www.bls.gov/oes/) |
+| BLS_Unemp.csv |Month, zip, unemp_rate | Unemployment Rate by county | [BLS LAUS](https://www.bls.gov/lau) |
+| BLS_Infl.xlsx | year, period, value | National inflation rate | [BLS CPI](https://www.bls.gov/cpi) |
+| FHFA_House_Price_Index.xlsx | ZIP Code, Year, Quarter, Index | House price index by county | [FHFA HPI](https://www.fhfa.gov/data/hpi) |
+| FM_30yr_FRM_Rate.xlsx | Date, US_30yr_FRM | US 30-year fixed rate mortgage average | [FREDDIE MAC](https://www.freddiemac.com/pmms) |
+
+To add new economic variables or change the pattern or format of existing ones, 
+the economic data processing [script](process/economic_data_processing.py) must be adapted.
+
 
 
 

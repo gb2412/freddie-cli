@@ -6,7 +6,18 @@ The CLI is a handy tool for anyone interacting with Freddie Mac's data for analy
 
 Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.com/en/stable/).
 
-Author: [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
+©️ [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
+
+## Table of Contents
+- Prerequisites
+- Setup
+- Commands
+   - download
+   - process
+   - sample
+   - train
+- Configurations
+- OOM Errors
 
 ## Prerequisites
 **[Python](https://www.python.org/downloads/) 3.8 or higher**: To train sparse GAM models with the [fastsparsegams](https://pypi.org/project/fastsparsegams/) library as in the paper, Python 3.8-3.11 is required.
@@ -124,6 +135,51 @@ freddie train --model 'model_name'  # Process training and test sets
 ```
 
 ## Configurations
+The [configuration file](config.yml) allows customization of the resulting datasets and models without directly editing the code.
+The file contains the configurations used in the paper but can be easily edited to suit the user's purposes and resources.
+
+Below is a detailed description of all available configuration settings.
+
+#### [Paths Configuration](config.yml#L1)
+| Field | Description |
+|-------|-------------|
+| `paths.loan_data` | Directory for raw Freddie Mac loan data files |
+| `paths.processed_data` | Output directory for processed loan data |
+| `paths.economic_data` | Directory containing economic data |
+| `paths.dev_sample` | Output directory for model development datasets |
+| `paths.models_dir` | Directory where trained models are saved |
+
+#### Download Settings
+| Field | Description |
+|-------|-------------|
+| `download.login_page_url` | Freddie Mac login page URL |
+| `download.auth_page_url` | Authentication endpoint URL |
+| `download.download_page_url` | Data download page URL |
+
+#### Processing Settings
+| Field | Description |
+|-------|-------------|
+| `process.mode` | Data quarters selection mode: "list" or "start_end" |
+| `process.start_end.start` | Starting year and quarter [YYYY, Q] when mode="start_end" |
+| `process.start_end.end` | Ending year and quarter [YYYY, Q] when mode="start_end" |
+| `process.years_quarters_list` | List of [year, quarter] pairs when mode="list" |
+| `process.batch_size` | Number of loans to process in each batch |
+
+#### Sampling Settings
+| Field | Description |
+|-------|-------------|
+| `sample.include_economic_data` | Whether to include economic variables |
+| `sample.train_obs_dates` | List of observation dates "YYYY-MM" for training set |
+| `sample.test_obs_dates` | List of observation dates "YYYY-MM" for test set |
+| `sample.train_size` | Training set size |
+| `sample.dev_columns.mortgage_columns` | List of loan-level features to include |
+| `sample.dev_columns.economic_columns` | List of economic features to include |
+
+#### Model Training Settings
+| Field | Description |
+|-------|-------------|
+| `train.<model_name>` | Name of the model |
+| `train.<model_name>.<parameter_name>` | Model parameter |
 
 
 

@@ -11,12 +11,15 @@ from sample.sample_selection import process_and_save_train_test
 def main(refresh):
     '''
     Process Freddie Mac data.
+
+    Args:
+        refresh (bool): If True, re-process all data. If False, process only missing data.
     '''
 
     # Load configurations
     config = load_config()
 
-    # Check if data are available for all year-quarter combinations
+    # Check if raw data are available for all year-quarter combinations
     missing_years_quarters = get_missing_years_quarters(config, data_type='loan_data')
     # Log missing data
     if missing_years_quarters:
@@ -28,7 +31,7 @@ def main(refresh):
     
     # Check if refresh is called
     if not refresh:
-        # Get missing year-quarter combinations
+        # Get missing year-quarter combinations in processed data
         years_quarters_list = get_missing_years_quarters(config, data_type='processed_data')
 
         if not years_quarters_list:
@@ -57,5 +60,6 @@ def main(refresh):
 
 
 if __name__ == "__main__":
+    # Check if refresh is called
     refresh = '--refresh' in sys.argv
     main(refresh)

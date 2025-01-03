@@ -6,7 +6,7 @@ import click
 @click.command()
 @click.option('--refresh', '-r', is_flag=True, help='Force a refresh of the data.')
 @click.option('--use-econ-data', '-eco', is_flag=True, help='Include economic data.')
-@click.option('--binary', '-bin', is_flag=True, help='Include economic data.')
+@click.option('--binary', '-bin', is_flag=True, help='Save data in binary format.')
 def sample(refresh, use_econ_data, binary):
     """
     CLI command to sample Freddie Mac and economic data.

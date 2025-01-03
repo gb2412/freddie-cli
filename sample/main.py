@@ -7,9 +7,16 @@ from utils.config import load_config, get_missing_years_quarters
 from sample.sample_selection import process_and_save_train_test
 
 
-def main(refresh, use_econ_data, binary):
+def main(refresh:bool, 
+         use_econ_data:bool, 
+         binary:bool):
     '''
     Sample Freddie Mac and economic data ans split train and test sets.
+
+    Args:
+        - refresh (bool): If True, resample train and test sets. If False, keep existing sets.
+        - use_econ_data (bool): If True, include economic data in the sample.
+        - binary (bool): If True, convert features to binary.
     '''
 
     # Load configurations
@@ -44,6 +51,7 @@ def main(refresh, use_econ_data, binary):
                                     config['sample']['dev_columns']['economic_columns'] \
                                     if use_econ_data else config['sample']['dev_columns']['mortgage_columns'],
                                 train_size=config['sample']['train_size'],
+                                categorical_encodings=config['sample']['features_encodings'],
                                 output_path=Path(config['paths']['dev_sample']),
                                 binary_output=binary,
                                 use_economic_data=use_econ_data,
@@ -56,6 +64,7 @@ def main(refresh, use_econ_data, binary):
 
 
 if __name__ == "__main__":
+    # Check if flags are called
     refresh = '--refresh' in sys.argv
     use_econ_data = '--use-econ-data' in sys.argv
     binary = '--binary' in sys.argv

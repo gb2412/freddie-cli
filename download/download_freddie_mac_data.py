@@ -12,7 +12,12 @@ from utils.logging import Colors, log_info
 
 
 def setup_directory(path: Path):
-    """Create data directory structure"""
+    '''
+    Create directory if doesn't exists.
+
+    Args:
+        - path (Path): Path object.
+    '''
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -22,14 +27,17 @@ def get_login_response(username,
                        login_page_url,
                        auth_page_url,
                        download_page_url):
-    """
+    '''
     Login into Freddie Mac website, accept terms and conditions.
     Return session object and response content.
 
-    Parameters:
+    Args:
         - username (str): Freddie Mac username.
         - password (str): Freddie Mac password.
-    """
+        - login_page_url (str): URL to login page.
+        - auth_page_url (str): URL to authentication page.
+        - download_page_url (str): URL to download page.
+    '''
 
     try:
         # Initialize requests session.
@@ -76,21 +84,24 @@ def get_login_response(username,
 
 
 def download_with_retry(session, 
-                        url,
-                        year,
-                        quarter,
-                        data_dir,
-                        max_retries=3, 
-                        backoff_factor=1):
-    """
-    Download file with retry logic and content validation
+                        url:str,
+                        year:int,
+                        quarter:int,
+                        data_dir:Path,
+                        max_retries:int=3, 
+                        backoff_factor:int=1):
+    '''
+    Download file with retry logic and content validation.
     
-    Parameters:
+    Args:
         - session (requests.Session): requests Session object
         - url (str): URL to download from
+        - year (int): Year of data
+        - quarter (int): Quarter of data
+        - data_dir (Path): Directory to save data
         - max_retries (int): Maximum number of retry attempts
         - backoff_factor (int): Backoff factor for retry delays
-    """
+    '''
     
     # Configure retry strategy
     retry_strategy = Retry(
@@ -148,16 +159,17 @@ def download_save_data(username,
                       auth_page_url,
                       download_page_url):
     '''
-    Download data and keep them in memory.
-    Process ORIGINATION and PERFORMANCE data.
+    Main logic for downloading and saving Freddie Mac data.
+    Login and download each year-quarter combination iteratively.
 
-    Inputs:
-        - session (requests.Session): Session object.
-        - origination_table (str): Iceberg table name.
-        - performance_table (str): Iceberg table name.
-        - run_date (str): Date of processing.
-        - year (int): data reference year.
-        - quarter (int): data reference quarter.
+    Args:
+        - username (str): Freddie Mac username.
+        - password (str): Freddie Mac password.
+        - years_quarters (list): list of tuples with year and quarter combinations.
+        - data_dir (str): Directory to save data.
+        - login_page_url (str): URL to login page.
+        - auth_page_url (str): URL to authentication page.
+        - download_page_url (str): URL to download page.
     '''
 
     log_info(f"Starting processing for {len(years_quarters)} year-quarter combinations")

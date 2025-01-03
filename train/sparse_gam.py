@@ -9,6 +9,12 @@ from utils.logging import log_info
 
 
 def get_train_data(data_path: Path):
+    '''
+    Import training set.
+
+    Args:
+        - data_path (Path): Path to samples directory
+    '''
 
     log_info("START loading training data")
     
@@ -49,6 +55,19 @@ def train_sparse_gam(data_path: Path,
                         algorithm:str="CDPSI",
                         scale_down_factor:float=0.8
                         ):
+    '''
+    Train sparse GAM model.
+
+    Args:
+        - data_path (Path): Path to samples directory
+        - models_path (Path): Path to save models
+        - loss (str): Loss function to use
+        - penalty (str): Penalty type to use
+        - max_support_size (int): Maximum support size
+        - num_lambda (int): Number of lambdas
+        - algorithm (str): Fitting algorithm to use
+        - scale_down_factor (float): Scale down factor
+    '''
 
     # Import training data
     X_train, y_train = get_train_data(data_path)

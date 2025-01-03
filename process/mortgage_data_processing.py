@@ -7,16 +7,17 @@ import polars as pl
 from utils.logging import log_memory_usage, Colors, log_info
 
 
-def load_origination_data(year, 
-                          quarter,
+def load_origination_data(year:int, 
+                          quarter:int,
                           data_path: Path):
     '''
     Import origination data for a given year and quarter from the Freddie Mac dataset.
     Unzip data and read the text file into a polars DataFrame enforcing the schema.
 
-    Parameters:
-    - year (int): The year of the data to import.
-    - quarter (int): The quarter of the data to import.
+    Args:
+        - year (int): The year of the data to import.
+        - quarter (int): The quarter of the data to import.
+        - data_path (Path): The path to the data folder.
     '''
 
     # Path to zip folder
@@ -71,17 +72,19 @@ def load_origination_data(year,
     return origination_data
 
 
-def load_performance_data(year, 
-                          quarter,
+def load_performance_data(year:int, 
+                          quarter:int,
                           data_path: Path,
                           loan_ids):
     '''
     Import performance data for a given year and quarter from the Freddie Mac dataset.
     Unzip data and read the text file into a polars DataFrame enforcing the schema.
 
-    Parameters:
-    - year (int): The year of the data to import.
-    - quarter (int): The quarter of the data to import.
+    Args:
+        - year (int): The year of the data to import.
+        - quarter (int): The quarter of the data to import.
+        - data_path (Path): The path to the data folder.
+        - loan_ids (polars.DataFrame): The loan ids to filter the performance data.
     '''
 
     # Path to zip folder
@@ -143,7 +146,7 @@ def change_column_encoding(orig_data, perf_data):
     Change column format and econding.
     Standardize missing values specification.
 
-    Parameters:
+    Args:
         - orig_data (polars.DataFrame): The origination data.
         - perf_data (polars.DataFrame): The performance data.
     '''
@@ -220,18 +223,20 @@ def change_column_encoding(orig_data, perf_data):
     return orig_data, perf_data
 
 
-def add_loan_target_and_features(orig_data,
-                                perf_data, 
-                                year, 
-                                quarter):
+def add_loan_target_and_features(orig_data:pl.DataFrame,
+                                perf_data:pl.DataFrame, 
+                                year:int, 
+                                quarter:int):
     '''
+    Compute target variable.
     Apply transformations to the origination and performance data.
+    Add new features.
 
-    Parameters:
-    - orig_data (polars.DataFrame): The origination data.
-    - perf_data (polars.DataFrame): The performance data.
-    - year (int): The year of the data.
-    - quarter (int): The quarter of the data.
+    Args:
+        - orig_data (polars.DataFrame): The origination data.
+        - perf_data (polars.DataFrame): The performance data.
+        - year (int): The year of the data.
+        - quarter (int): The quarter of the data.
     '''
     
     # Filter out defected loans from origination data
@@ -371,7 +376,13 @@ def save_batch_to_disk(batch: pl.DataFrame,
                        batch_num: int,
                        output_path: Path):
     '''
-    Save a processed batch to disk.
+    Create directory if doesn't exists.
+    Save processed batch to disk.
+
+    Args:
+        - batch (polars.DataFrame): The processed batch.
+        - batch_num (int): The number of the batch.
+        - output_path (Path): The path to save the processed batch.
     '''
 
     # Create output directory if it doesn't exist
@@ -381,18 +392,20 @@ def save_batch_to_disk(batch: pl.DataFrame,
     batch.write_parquet(output_path / f'batch_{batch_num}.parquet')
 
 
-def process_year_quarter_in_batches(year, 
-                                    quarter,
-                                    batch_size,
+def process_year_quarter_in_batches(year:int, 
+                                    quarter:int,
+                                    batch_size:int,
                                     data_path: Path,
                                     output_path: Path):
     '''
     Main processing function: loads origination and performance data, processes it, and saves it to disk.
 
-    Parameters:
-    - year (int): The year of the data to import.
-    - quarter (int): The quarter of the data to import.
-    - output_path (str): The path to save the processed data.
+    Args:
+        - year (int): The year of the data to import.
+        - quarter (int): The quarter of the data to import.
+        - batch_size (int): The size of the batches to process.
+        - data_path (Path): The path to the raw data folder.
+        - output_path (str): The path to save the processed data.
     '''
     
     log_info(f"Processing data for {year}Q{quarter}")
@@ -419,7 +432,7 @@ def process_year_quarter_in_batches(year,
         # Add features and target variable
         merged_df = add_loan_target_and_features(orig_df, perf_df, year, quarter)
 
-        # Save merged data
+        # Save merged data, one folder per year-quarter
         save_batch_to_disk(merged_df, i//batch_size, output_path / f'{year}Q{quarter}')
 
         log_info(f"Completed processing batch n. {i//batch_size} for {year}Q{quarter}")

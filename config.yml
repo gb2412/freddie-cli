@@ -23,18 +23,6 @@ process:
     - [2015, 2]
     - [2015, 3]
     - [2015, 4]
-    - [2016, 1]
-    - [2016, 2]
-    - [2016, 3]
-    - [2016, 4]
-    - [2017, 1]
-    - [2017, 2]
-    - [2017, 3]
-    - [2017, 4]
-    - [2018, 1]
-    - [2018, 2]
-    - [2018, 3]
-    - [2018, 4]
   batch_size: 50000 # Number of loans to process at a time
 
 sample:
@@ -47,7 +35,7 @@ sample:
   test_obs_dates:
     - "2022-03"
     - "2022-06"
-  train_size: 1500000
+  train_size: 1500000  # Number of observations to include in the training set, equally devided by date.
   dev_columns: # Features to include in the development dataset
     mortgage_columns:
       - Loan_Num
@@ -100,6 +88,50 @@ sample:
       - HPI_Change_yoy
       - Int_Rate_Diff
       - Curr_Int_Rate_Diff
+  features_encodings:  # Encoding for better interpretability
+    categorical_mappings:  # Values mappings for categorical variables
+      Occupancy_Status:
+        - ["P", "Primary Res."]
+        - ["I", "Investment"]
+        - ["S", "Second Home"]
+      Channel:
+        - ["R", "Retail"]
+        - ["C", "Correspondent"]
+        - ["B", "Broker"]
+        - ["T", "TPO"]
+      Amortization_Type:
+        - ["R", "FRM"]
+        - ["C", "ARM"]
+      Property_Type:
+        - ["CO", "Condominium"]
+        - ["MH", "Manufactured House"]
+        - ["SF", "Single-Family Home"]
+        - ["PU", "PDU"]
+        - ["CP", "Cooperative Share"]
+      Loan_Purpose:
+        - ["P", "Purchase"]
+        - ["C", "Cash-out Refinance"]
+        - ["N", "No Cash-Out Refinance"]
+        - ["R", "Refinance No Specified"]
+      Property_Val_Meth:
+        - ["AC", "ACE Loan"]
+        - ["A", "Full Appraisal"]
+        - ["O", "Other Appraisal"]
+        - ["ACP", "ACE + PDR"]
+        - ["R", "GSE Refinance"]
+      Borrower_Assistance_Status_Code:
+        - ["F", "Forbearance"]
+        - ["R", "Repayment"]
+        - ["T", "Trial Period"]
+      Modification_Flag:
+        - ["Y", "Yes"]
+        - ["P", "Prev. Period"]
+    yn_columns:  # Binary Y/N columns
+      - First_Time_Home_Buyer_Flag
+      - Prepay_Penalty
+      - Sup_Conforming_Flag
+      - Step_Modification_Flag
+      - Delinquency_Disaster_Flag
 
 # Model fitting settings 
 train:

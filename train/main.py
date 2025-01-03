@@ -4,17 +4,28 @@ import importlib
 from utils.config import get_model_config
 
 
-def load_model_function(model_name):
-    """Dynamically import model training function"""
+def load_model_function(model_name:str):
+    '''
+    Dynamically import model training function.
 
+    Args:
+        - model_name (str): Name of model to train
+    '''
+
+    # Import model configurstions
     model_configs = get_model_config(model_name)
+    # IMport model training function from repsective script
     module = importlib.import_module('train.'+model_name)
     train_fn = getattr(module, 'train_'+model_name)
+
     return train_fn, model_configs
 
 
 def parse_model_arg():
-    """Parse and validate model argument"""
+    '''
+    Parse and validate model parameters.
+    '''
+
     # Get all argument except script name
     args = sys.argv[1:]
 
@@ -30,7 +41,9 @@ def parse_model_arg():
 
 
 def main():
-    """Train specified model with config parameters"""
+    '''
+    Train specified model with config parameters.
+    '''
 
     # Get model name
     model_name = parse_model_arg()

@@ -22,7 +22,7 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
    - [Processing Settings](#Processing-Settings)
    - [Sampling Settings](#Sampling-Settings)
    - [Model Training Settings](#Model-Training-Settings)
-- OOM Errors
+- [OOM Errors](#OOM-Errors)
 
 ## Prerequisites
 **[Python](https://www.python.org/downloads/) 3.8 or higher**: To train sparse GAM models with the [fastsparsegams](https://pypi.org/project/fastsparsegams/) library as in the paper, Python 3.8-3.11 is required.
@@ -37,7 +37,7 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
    ```bash
    pip install -e .
    ```
-3. **Add Freddie Mac Credentials**: Create an [account](https://freddiemac.embs.com/FLoan/Bin/loginrequest.php). Create and `.env` file using [`template.env`](template.env) as a template.
+3. **Set Freddie Mac Dataset Credentials**: Create an [account](https://freddiemac.embs.com/FLoan/Bin/loginrequest.php). Create an `.env` file using [`template.env`](template.env) as a template and include your credentials.
 
 ## Commands
 Freddie CLI is based on four simple commands that execute Python scripts from the corresponding folders.
@@ -61,7 +61,7 @@ Process raw data to obtain usable datasets for exploratory analysis and model de
 
 Processing steps:
 1. Upload origination and monthly performance data by quarter as a [polars](https://pola.rs/) data frame.
-2. Set dataframe schemas.
+2. Set data frame schemas.
 3. Encode missing values and enums according to the dataset documentation.
 4. Create the binary target variable to develop PD models according to the definition of default provided in the paper.
 5. Create new features.
@@ -80,7 +80,7 @@ freddie process --refresh  # Re-download all quarters
 
 ### [`sample`](sample/)
 Create training and test sets by sampling from the processed data.
-Sampling dates and sizes are defined in the [configurations](config.py).
+Sampling dates and sizes are defined in the [configurations](#Sampling-Settings).
 
 Both standard and binary sets can be created according to the data format required by the model to be trained.
 
@@ -128,7 +128,7 @@ Train and save custom models on the sampled training set.
 
 The repo contains training scripts for sparse GAM and Random Forest classifiers. 
 Custom training scripts can be created in the following steps:
-1. Define the model name and parameters in the configurations [file](config.py)
+1. Define the model name and parameters in the configurations [file](#Model-Training-Settings)
 2. Create a script in the [train](train/) folder as `<model_name>.py`. Use the same name as in the configuration.
 3. The script should import the training set, fit the model, and save it. You can use the existing scripts as templates. 
 
@@ -188,6 +188,17 @@ Below is a detailed description of all available configuration settings.
 |-------|-------------|
 | `train.<model_name>` | Name of the model |
 | `train.<model_name>.<parameter_name>` | Model parameter |
+
+## OOM Errors
+Freddie Mac's Single Family Loan-Level Dataset is probably the largest source of mortgage origination and performance data available online. 
+This makes it a really valuable resource, but due to its size, you may experience out-of-memory errors when working with it. 
+**freddie-cli** has been designed to run on a standard laptop with 16GB of RAM, but some configurations need to be tweaked to avoid OOM errors.
+
+| Field | Tips |
+|-------|-------------|
+| `process.batch_size` | Keep the number of loans processed per time around 50k |
+| `sample.train_size` | A large training set can cause OOM errors during model fitting |
+| `sample.dev_columns` | The number of features can greatly increase the size of training and test sets, especially in the case of binary samples |
 
 
 

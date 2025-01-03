@@ -144,6 +144,7 @@ def download_with_retry(session,
             if attempt == max_retries - 1:
                 # On final attempt, just log error and return
                 log_info(f"{Colors.FAIL}Download failed for {year}Q{quarter}{Colors.ENDC}: {str(e)}. \
+                         \nPossible causes are unstable connection and corruption during download. \
                          \nRun `freddie download` to retry after all other quarters have been downloaded.")
                 return False
             else:

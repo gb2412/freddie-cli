@@ -41,7 +41,7 @@ def main(refresh):
         # Get entire list of year-quarter to process
         years_quarters_list = config["process"]["years_quarters_list"]
 
-    log_info(f"Starting processing for {len(years_quarters_list)} year-quarter combinations: {years_quarters_list}")
+    log_info(f"Starting processing {len(years_quarters_list)} year-quarter combinations: {years_quarters_list}")
 
     # Loop over each year-quarter
     for year, quarter in years_quarters_list:

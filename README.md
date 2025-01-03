@@ -128,9 +128,9 @@ Train and save custom models on the sampled training set.
 
 The repo contains training scripts for sparse GAM and Random Forest classifiers. 
 Custom training scripts can be created in the following steps:
-1. Define the model name and parameters in the configurations [file](#Model-Training-Settings)
-2. Create a script in the [train](train/) folder as `<model_name>.py`. Use the same name as in the configuration.
-3. The script should import the training set, fit the model, and save it. You can use the existing scripts as templates. 
+1. Define the model name and parameters in the [configurations](#Model-Training-Settings)
+2. Create a script in the [train](train/) folder as `<model_name>.py`. Use the same name as in the [configuration](#Model-Training-Settings).
+3. The script should import the training set, fit the model, and save it. The training process has to be defined in a function called `train_<model_name>`. You can use the existing scripts as templates. 
 
 | Option         | Short | Description              |
 | -------------- | ----- | ------------------------ |
@@ -191,7 +191,7 @@ Below is a detailed description of all available configuration settings.
 
 ## OOM Errors
 Freddie Mac's Single Family Loan-Level Dataset is probably the largest source of mortgage origination and performance data available online. 
-This makes it a really valuable resource, but due to its size, you may experience out-of-memory errors when working with it. 
+This makes it a valuable resource, but due to its size, you may experience out-of-memory errors when working with it. 
 **freddie-cli** has been designed to run on a standard laptop with 16GB of RAM, but some configurations need to be tweaked to avoid OOM errors.
 
 | Field | Tips |

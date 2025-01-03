@@ -17,7 +17,7 @@ process:
   mode: "start_end"  # Options: "list" or "start_end"
   start_end: # Required if mode is "start_end"
     start: [2015, 1]
-    end: [2018, 4]
+    end: [2015, 4]
   years_quarters_list: # Required if mode is "list"
     - [2015, 1]
     - [2015, 2]

@@ -19,9 +19,11 @@ def load_model_function(model_name:str):
         module = importlib.import_module('train.' + model_name)
         train_fn = getattr(module, 'train_' + model_name)
     except ModuleNotFoundError:
-        raise ImportError(f"Module 'train.{model_name}' not found. Please create a training script named '{model_name}.py' in 'train' directory.")
+        raise ImportError(f"Module 'train.{model_name}' not found. \
+                        \nPlease create a training script named '{model_name}.py' in 'train' directory.")
     except AttributeError:
-        raise ImportError(f"Function 'train_{model_name}' not found in module 'train.{model_name}'. Please define the training function as train_{model_name}.")
+        raise ImportError(f"Function 'train_{model_name}' not found in module 'train.{model_name}'. \
+                        \nPlease define the training function as train_{model_name}.")
 
     return train_fn, model_configs
 

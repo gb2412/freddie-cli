@@ -26,10 +26,10 @@ def main(refresh:bool,
     missing_years_quarters = get_missing_years_quarters(config, data_type='processed_data')
     # Log missing data
     if missing_years_quarters:
-        raise RuntimeError(f"""{Colors.FAIL}ERROR{Colors.ENDC}: Missing data for {len(missing_years_quarters)} 
-            year-quarter combinations: {missing_years_quarters}
-            To process the missing data, please run the following command: `freddie process`
-            To process all data, please run the following command: `freddie process --refresh`
+        raise RuntimeError(f"""{Colors.FAIL}ERROR{Colors.ENDC}: Missing data for {len(missing_years_quarters)} \
+            \nyear-quarter combinations: {missing_years_quarters} \
+            \nTo process the missing data, please run the following command: `freddie process` \
+            \nTo process all data, please run the following command: `freddie process --refresh`
             """)
 
     # Check if refresh is called

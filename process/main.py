@@ -23,10 +23,10 @@ def main(refresh):
     missing_years_quarters = get_missing_years_quarters(config, data_type='loan_data')
     # Log missing data
     if missing_years_quarters:
-        raise RuntimeError(f"""{Colors.FAIL}ERROR{Colors.ENDC}: Missing data for {len(missing_years_quarters)} 
-            year-quarter combinations: {missing_years_quarters}
-            To download the missing data, please run the following command: `freddie download`
-            To download all data, please run the following command: `freddie download --refresh`
+        raise RuntimeError(f"""{Colors.FAIL}ERROR{Colors.ENDC}: Missing data for {len(missing_years_quarters)} \
+            \nyear-quarter combinations: {missing_years_quarters} \
+            \nTo download the missing data, please run the following command: `freddie download` \
+            \nTo download all data, please run the following command: `freddie download --refresh` \
             """)
     
     # Check if refresh is called

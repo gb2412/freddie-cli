@@ -1,5 +1,6 @@
 # Ignore non-code folders
-data/
+data/*
+!data/economic/
 
 # Ignore vscode configs
 .vscode/

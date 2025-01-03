@@ -132,7 +132,7 @@ def download_with_retry(session,
                     files = zf.namelist()
                     if not files:
                         raise ValueError("Empty zip file")
-                    log_info(f"Found {len(files)} files in zip archive: {files}")
+                    log_info(f"Found {len(files)} files in {year}Q{quarter} zip archive: {files}")
 
             # Save zipped data archive
             zip_path = data_dir / f"historical_data_{year}Q{quarter}.zip"
@@ -143,11 +143,12 @@ def download_with_retry(session,
         except Exception as e:
             if attempt == max_retries - 1:
                 # On final attempt, just log error and return
-                log_info(f"{Colors.FAIL}Download failed for {year}Q{quarter}{Colors.ENDC}: {str(e)}")
+                log_info(f"{Colors.FAIL}Download failed for {year}Q{quarter}{Colors.ENDC}: {str(e)}. \
+                         \nRun `freddie download` to retry after all other quarters have been downloaded.")
                 return False
             else:
                 # Log warning and retry
-                log_info(f"{Colors.WARNING}WARNING{Colors.ENDC}: Download attempt {attempt + 1} for {year}Q{quarter} failed: {str(e)}")
+                log_info(f"{Colors.WARNING}WARNING{Colors.ENDC}: Download attempt {attempt + 1}/{max_retries} for {year}Q{quarter} failed: {str(e)}")
                 time.sleep(backoff_factor * (2 ** attempt))
 
 
@@ -172,7 +173,7 @@ def download_save_data(username,
         - download_page_url (str): URL to download page.
     '''
 
-    log_info(f"Starting processing for {len(years_quarters)} year-quarter combinations")
+    log_info(f"Starting downloading {len(years_quarters)} year-quarter combinations")
 
     # Create data directory if not exists
     data_dir = setup_directory(Path(data_dir))

@@ -142,6 +142,20 @@ train:
     num_lambda: 150
     algorithm: "CDPSI"
     scale_down_factor: 0.8
+  random_forest:
+    n_estimators: 200
+    max_depth: 7
+    class_weight: 'balanced'
+    monotonic_cs:
+      increasing:
+        - 'CLTV'
+        - 'DTI'
+        - 'LTV'
+        - 'Int_Rate'
+        - 'Delinquency_Status'
+    decreasing:
+        - 'Credit_Score'
+        - 'Payment_Ratio'
  # Add new models and their respective parameters like this:
   # model_name:
   #   parameter_1: "value_1"

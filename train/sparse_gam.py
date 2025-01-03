@@ -3,6 +3,7 @@ import pickle
 import polars as pl
 import numpy as np
 from scipy.sparse import csc_matrix
+
 import fastsparsegams
 
 from utils.logging import log_info
@@ -49,11 +50,11 @@ def get_train_data(data_path: Path):
 def train_sparse_gam(data_path: Path,
                         models_path: Path,
                         loss,
-                        penalty:str='L0',
-                        max_support_size:int=40,
-                        num_lambda:int=150,
-                        algorithm:str="CDPSI",
-                        scale_down_factor:float=0.8
+                        penalty:str,
+                        max_support_size:int,
+                        num_lambda:int,
+                        algorithm:str,
+                        scale_down_factor:float
                         ):
     '''
     Train sparse GAM model.

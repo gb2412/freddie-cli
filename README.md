@@ -1,7 +1,7 @@
 # Freddie CLI
 A simple CLI to download, process, and train ML models on the [Freddie Mac's Single Family Loan-Level Dataset](https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset).
 
-Freddie CLI has been developed during the realization of the following research paper: Interpretable Machine Learning in Credit Risk Modelling. 
+Freddie CLI has been developed during the realization of the following research paper: [Interpretable Machine Learning in Credit Risk Modelling](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling). 
 The CLI is a handy tool for anyone interacting with Freddie Mac's data for analysis and model development.
 
 Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.com/en/stable/).
@@ -25,7 +25,7 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
 - [OOM Errors](#OOM-Errors)
 
 ## Prerequisites
-**[Python](https://www.python.org/downloads/) 3.8 or higher**: To train sparse GAM models with the [fastsparsegams](https://pypi.org/project/fastsparsegams/) library as in the paper, Python 3.8-3.11 is required.
+**[Python](https://www.python.org/downloads/) 3.8 or higher**: To train sparse GAM models with the [fastsparsegams](https://pypi.org/project/fastsparsegams/) library as in the [paper](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling), Python 3.8-3.11 is required.
 
 ## Setup
 1. **Clone the repository**: Open a terminal, navigate to your desired directory, and clone the repository using:
@@ -63,7 +63,7 @@ Processing steps:
 1. Upload origination and monthly performance data by quarter as a [polars](https://pola.rs/) data frame.
 2. Set data frame schemas.
 3. Encode missing values and enums according to the dataset documentation.
-4. Create the binary target variable to develop PD models according to the definition of default provided in the paper.
+4. Create the binary target variable to develop PD models according to the definition of default provided in the [paper](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling).
 5. Create new features.
 6. Save data frames as [parquet](https://parquet.apache.org/) files.
 
@@ -142,7 +142,7 @@ freddie train --model 'model_name'  # Process training and test sets
 
 ## Configurations
 The [configuration file](config.yml) allows customization of the resulting datasets and models without directly editing the code.
-The file contains the configurations used in the paper but can be easily edited to suit the user's purposes and resources.
+The file contains the configurations used in the [paper](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling) but can be easily edited to suit the user's purposes and resources.
 
 Below is a detailed description of all available configuration settings.
 

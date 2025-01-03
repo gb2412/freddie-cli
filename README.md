@@ -9,19 +9,19 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
 ©️ [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
 
 ## Table of Contents
-- [Prerequisites](Prerequisites)
-- [Setup](Setup)
-- [Commands](Commands)
-   - [download](download)
-   - [process](process)
-   - [sample](sample)
-   - [train](train)
-- [Configurations](Configurations)
-   - Paths
-   - Download Settings
-   - Processing Settings
-   - Sampling Settings
-   - Model Training Settings
+- [Prerequisites](##Prerequisites)
+- [Setup](##Setup)
+- [Commands](##Commands)
+   - [download](###download)
+   - [process](###process)
+   - [sample](###sample)
+   - [train](###train)
+- [Configurations](#Configurations)
+   - [Paths](####Paths)
+   - [Download Settings](####DownloadSettings)
+   - [Processing Settings](####ProcessingSettings)
+   - [Sampling Settings](####SamplingSettings)
+   - [Model Training Settings](####ModelTrainingSettings)
 - OOM Errors
 
 ## Prerequisites
@@ -179,6 +179,8 @@ Below is a detailed description of all available configuration settings.
 | `sample.train_size` | Training set size |
 | `sample.dev_columns.mortgage_columns` | List of loan-level features to include |
 | `sample.dev_columns.economic_columns` | List of economic features to include |
+| `sample.features_encodings.categorical_mappings` | Dictionary of values mappings for categorical features |
+| `sample.features_encodings.yn_columns` | List of binary Yes/No features |
 
 #### Model Training Settings
 | Field | Description |

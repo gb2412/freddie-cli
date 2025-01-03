@@ -9,19 +9,19 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
 ©️ [Giulio Bellini](https://www.linkedin.com/in/giuliobellini/)
 
 ## Table of Contents
-- [Prerequisites](##Prerequisites)
-- [Setup](##Setup)
-- [Commands](##Commands)
-   - [download](###download)
-   - [process](###process)
-   - [sample](###sample)
-   - [train](###train)
+- [Prerequisites](#Prerequisites)
+- [Setup](#Setup)
+- [Commands](#Commands)
+   - [download](#download)
+   - [process](#process)
+   - [sample](#sample)
+   - [train](#train)
 - [Configurations](#Configurations)
-   - [Paths](####Paths)
-   - [Download Settings](####DownloadSettings)
-   - [Processing Settings](####ProcessingSettings)
-   - [Sampling Settings](####SamplingSettings)
-   - [Model Training Settings](####ModelTrainingSettings)
+   - [Paths](#Paths)
+   - [Download Settings](#Download-Settings)
+   - [Processing Settings](#Processing-Settings)
+   - [Sampling Settings](#Sampling-Settings)
+   - [Model Training Settings](#Model-Training-Settings)
 - OOM Errors
 
 ## Prerequisites

@@ -155,14 +155,14 @@ Below is a detailed description of all available configuration settings.
 | `paths.dev_sample` | Output directory for model development datasets |
 | `paths.models_dir` | Directory where trained models are saved |
 
-#### Download Settings
+#### [Download Settings](config.yml#L9)
 | Field | Description |
 |-------|-------------|
 | `download.login_page_url` | Freddie Mac login page URL |
 | `download.auth_page_url` | Authentication endpoint URL |
 | `download.download_page_url` | Data download page URL |
 
-#### Processing Settings
+#### [Processing Settings](config.yml#L15)
 | Field | Description |
 |-------|-------------|
 | `process.mode` | Data quarters selection mode: "list" or "start_end" |
@@ -171,7 +171,7 @@ Below is a detailed description of all available configuration settings.
 | `process.years_quarters_list` | List of [year, quarter] pairs when mode="list" |
 | `process.batch_size` | Number of loans to process in each batch |
 
-#### Sampling Settings
+#### [Sampling Settings](config.yml#L28)
 | Field | Description |
 |-------|-------------|
 | `sample.train_obs_dates` | List of observation dates "YYYY-MM" for training set |
@@ -182,7 +182,7 @@ Below is a detailed description of all available configuration settings.
 | `sample.features_encodings.categorical_mappings` | Dictionary of values mappings for categorical features |
 | `sample.features_encodings.yn_columns` | List of binary Yes/No features |
 
-#### Model Training Settings
+#### [Model Training Settings](config.yml#L136)
 | Field | Description |
 |-------|-------------|
 | `train.<model_name>` | Name of the model |

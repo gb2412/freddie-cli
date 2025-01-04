@@ -157,11 +157,14 @@ def missing_values_encoding(df: pl.DataFrame) -> pl.DataFrame:
     )
 
     # Rename special columns
-    missing_indicators = missing_indicators.rename(
-        {'Credit_Score is Missing': 'Credit_Score <= 300',
-         'MI_Percentage is Missing': 'MI_Percentage not in 1-55'},
-        strict=False
-    )
+    if 'Credit_Score' in cols_with_nulls:
+        missing_indicators = missing_indicators.rename(
+            {'Credit_Score is Missing': 'Credit_Score <= 300'}
+        )
+    if 'MI_Percentage' in cols_with_nulls:
+        missing_indicators = missing_indicators.rename(
+            {'MI_Percentage is Missing': 'MI_Percentage not in 1-55'}
+        )
 
     # Combine original df with missing indicators
     df = pl.concat([df, missing_indicators], how='horizontal')

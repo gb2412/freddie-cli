@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import List, Tuple
 import yaml
-from utils.logging import Colors, log_info
 
 
 def generate_quarters_list(start_year_quarter: Tuple[int], 

@@ -2,7 +2,7 @@
 A simple CLI to download, process, and train ML models on the [Freddie Mac's Single Family Loan-Level Dataset](https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset).
 
 Freddie CLI has been developed during the realization of the following research paper: [Interpretable Machine Learning in Credit Risk Modelling](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling). 
-The CLI is a handy tool for anyone interacting with Freddie Mac's data for analysis and model development.
+The CLI is a handy tool for anyone interacting with Freddie Mac's dataset for analysis and model development.
 
 Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.com/en/stable/).
 
@@ -37,10 +37,10 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
    ```bash
    pip install -e .
    ```
-3. **Set Freddie Mac Dataset Credentials**: Create an [account](https://freddiemac.embs.com/FLoan/Bin/loginrequest.php). Create an `.env` file using [`template.env`](template.env) as a template and include your credentials.
+3. **Set Freddie Mac Dataset Credentials**: Create an [account](https://freddiemac.embs.com/FLoan/Bin/loginrequest.php). Create an `.env` file in the repository using [`template.env`](template.env) as a template and include your account username and password.
 
 ## Commands
-Freddie CLI is based on four simple commands that execute Python scripts from the corresponding folders.
+Freddie CLI is based on **four simple commands** that execute Python scripts from the corresponding folders.
 
 ### [`download`](download/)
 Download Freddie Mac's Single Family Loan-Level Dataset for the quarters specified in the [configurations](#Download-Settings). 
@@ -57,15 +57,15 @@ freddie download --refresh  # Re-download all quarters
 ```
 
 ### [`process`](process/)
-Process raw data to obtain usable datasets for exploratory analysis and model development.
+Process raw data to obtain usable datasets for exploratory data analysis and model development.
 
 Processing steps:
-1. Upload origination and monthly performance data by quarter as a [polars](https://pola.rs/) data frame.
-2. Set data frame schemas.
-3. Encode missing values and enums according to the dataset documentation.
+1. Upload origination and monthly performance data by quarter as [polars](https://pola.rs/) DataFrames.
+2. Set DataFrames schemas.
+3. Encode missing values and enums according to the dataset [official documentation](https://www.freddiemac.com/fmac-resources/research/pdf/user_guide.pdf).
 4. Create the binary target variable to develop PD models according to the definition of default provided in the [paper](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling).
 5. Create new features.
-6. Save data frames as [parquet](https://parquet.apache.org/) files.
+6. Save DataFrames as [parquet](https://parquet.apache.org/) files.
 
 If a quarter has already been processed, it is skipped by default.
 
@@ -75,7 +75,7 @@ If a quarter has already been processed, it is skipped by default.
 
 ```bash
 freddie process  # Process missing quarters
-freddie process --refresh  # Re-download all quarters
+freddie process --refresh  # Re-process all quarters
 ```
 
 ### [`sample`](sample/)
@@ -95,20 +95,20 @@ The following economic time series up to June 2024 are available under [data/eco
 | FHFA_House_Price_Index.xlsx | ZIP Code, Year, Quarter, Index | House price index by county | [FHFA HPI](https://www.fhfa.gov/data/hpi) |
 | FM_30yr_FRM_Rate.xlsx | Date, US_30yr_FRM | US 30-year fixed rate mortgage average | [FREDDIE MAC](https://www.freddiemac.com/pmms) |
 
-To add new economic variables or change the schema or format of existing ones, 
+To add new economic variables or change the schema or format of the existing ones, 
 the economic data processing [script](process/economic_data_processing.py) must be adapted.
 
 Sampling steps:
-1. Upload relevant origination quarters and observation dates as a [polars](https://pola.rs/) data frame.
+1. Upload relevant origination quarters and observation dates as a [polars](https://pola.rs/) DataFrame.
 2. Filter out loans in default at the time of observation.
-3. Add economic variables, if required.
+3. Add economic variables, if specified.
 4. Select relevant features.
 5. Split training and test sets.
-6. If binary output required:
+6. If binary output is specified:
    7. Encode missing values as binary features.
    8. Encode categorical variables: one binary feature for each value.
-   9. Encode continuous variables: create binary variables of type `Var_Name <= threshold` for each percentile multiple of 5 (20 thresholds in total).
-10. Save training and test sets as [parquet](https://parquet.apache.org/)
+   9. Encode continuous variables: create binary variables of type `Var_Name <= threshold` for each percentile multiple of `100/num_thresholds` (`num_thresholds` thresholds in total).
+10. Save training and test sets as [parquet](https://parquet.apache.org/) files.
 
 | Option         | Short | Description              |
 | -------------- | ----- | ------------------------ |
@@ -117,14 +117,14 @@ Sampling steps:
 | --binary | -bin | Create binary training and test sets |
 
 ```bash
-freddie sample  # Process training and test sets
+freddie sample  # Sample training and test sets
 freddie sample --refresh  # Re-sample sets
 freddie sample --use-econ-data # Include economic data
 freddie sample --binary # Create binary sets
 ```
 
 ### [`train`](train/)
-Train and save custom models on the sampled training set.
+Fit and save custom models on the sampled training set.
 
 The repo contains training scripts for sparse GAM and Random Forest classifiers. 
 Custom training scripts can be created in the following steps:
@@ -137,12 +137,12 @@ Custom training scripts can be created in the following steps:
 | --model | -m | Pass the name of the model to be trained |
 
 ```bash
-freddie train --model 'model_name'  # Process training and test sets
+freddie train --model 'model_name'  # Fit model on training set
 ```
 
 ## Configurations
 The [configuration file](config.yml) allows customization of the resulting datasets and models without directly editing the code.
-The file contains the configurations used in the [paper](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling) but can be easily edited to suit the user's purposes and resources.
+The file contains the configurations used in the [paper](https://archive.org/details/interpretable-machine-learning-in-credit-risk-modelling) by default but can be easily edited to suit the user's purposes and resources.
 
 Below is a detailed description of all available configuration settings.
 
@@ -174,7 +174,6 @@ Below is a detailed description of all available configuration settings.
 #### Sampling Settings
 | Field | Description |
 |-------|-------------|
-| `sample.include_economic_data` | Whether to include economic variables |
 | `sample.train_obs_dates` | List of observation dates "YYYY-MM" for training set |
 | `sample.test_obs_dates` | List of observation dates "YYYY-MM" for test set |
 | `sample.train_size` | Training set size |
@@ -190,13 +189,13 @@ Below is a detailed description of all available configuration settings.
 | `train.<model_name>.<parameter_name>` | Model parameter |
 
 ## OOM Errors
-Freddie Mac's Single Family Loan-Level Dataset is probably the largest source of mortgage origination and performance data available online. 
-This makes it a valuable resource, but due to its size, you may experience out-of-memory errors when working with it. 
+Freddie Mac's Single Family Loan-Level Dataset is probably the largest source of mortgage origination and performance data freely available online. 
+This makes it an extremely valuable resource, but due to its size, you may experience out-of-memory errors when working with it. 
 **freddie-cli** has been designed to run on a standard laptop with 16GB of RAM, but some configurations need to be tweaked to avoid OOM errors.
 
 | Field | Tips |
 |-------|-------------|
-| `process.batch_size` | Keep the number of loans processed per time around 50k |
+| `process.batch_size` | Keep the number of loans processed per time around the default value |
 | `sample.train_size` | A large training set can cause OOM errors during model fitting |
 | `sample.dev_columns` | The number of features can greatly increase the size of training and test sets, especially in the case of binary samples |
 

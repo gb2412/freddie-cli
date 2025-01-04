@@ -25,8 +25,8 @@ process:
     - [2015, 4]
   batch_size: 50000 # Number of loans to process at a time
 
+# Training and test sets sampling settings
 sample:
-  include_economic_data: True # True if you want to process economic data
   train_obs_dates:
     - "2021-03"
     - "2021-06" 
@@ -133,7 +133,7 @@ sample:
       - Step_Modification_Flag
       - Delinquency_Disaster_Flag
 
-# Model fitting settings 
+# Models fitting settings 
 train:
   sparse_gam:
     loss: "Logistic"

@@ -35,7 +35,7 @@ Built with [polars](https://pola.rs/) and [click](https://click.palletsprojects.
    ```
 2. **Install the CLI**: Install the CLI and all the required Python packages using:
    ```bash
-   pip install -e .
+   pip install .
    ```
 3. **Set Freddie Mac Dataset Credentials**: Create an [account](https://freddiemac.embs.com/FLoan/Bin/loginrequest.php). Create an `.env` file in the repository using [`template.env`](template.env) as a template and include your account username and password.
 

@@ -23,7 +23,7 @@ def get_bls_income(data_path: Path):
                         .dt.month_end())
                 # fill nulls with the last known value partitioning by state
                 .group_by('State', maintain_order=True)
-                    .map_groups(lambda group_df: group_df.sort('Month').fill_null(strategy='forward'))
+                    .map_groups(lambda group_df: group_df.sort('Month').upsample('Month', every='1mo').fill_null(strategy='forward'))
     )
 
     return BLS_income
@@ -115,7 +115,7 @@ def get_house_price_index(data_path: Path):
                             .select(['Month','ZIP_Code','HP_Index'])
                             # fill nulls with the last known value partitioning by zip code
                             .group_by('ZIP_Code', maintain_order=True)
-                                .map_groups(lambda group_df: group_df.sort('Month').fill_null(strategy='forward'))
+                                .map_groups(lambda group_df: group_df.sort('Month').upsample('Month', every='1mo').fill_null(strategy='forward'))
     )
 
     return FHFA_house_price_index
@@ -158,7 +158,6 @@ def get_merged_econ_data(data_path: Path,
     '''
 
     # Read csv into polars dataframe
-
     BLS_income = get_bls_income(data_path)
     BLS_unemp = get_bls_unemployment(data_path)
     BLS_infl = get_bls_inflation(data_path)
@@ -170,11 +169,11 @@ def get_merged_econ_data(data_path: Path,
     merged_data = (
         loan_data
             .join(BLS_income, left_on=['Month','Property_State'], right_on=['Month','State'], how='left')
-            .join(BLS_unemp.with_columns(pl.col('Month').dt.offset_by('1mo')), on=['Month','ZIP_Code'], how='left')
-            .join(BLS_infl.with_columns(pl.col('Month').dt.offset_by('1mo')), on='Month', how='left')
-            .join(FHFA_house_price_index.with_columns(pl.col('Month').dt.offset_by('2mo')), on=['Month','ZIP_Code'], how='left')
-            .join(FHFA_house_price_index.with_columns(pl.col('Month').dt.offset_by('2mo')), left_on=['First_Payment_Month','ZIP_Code'], right_on=['Month','ZIP_Code'], how='left',suffix='_Orig')
-            .join(FHFA_house_price_index.with_columns(pl.col('Month').dt.offset_by('14mo')), left_on=['Month','ZIP_Code'], right_on=['Month','ZIP_Code'], how='left',suffix='_year')
+            .join(BLS_unemp.with_columns(pl.col('Month').dt.offset_by('1mo').dt.month_end()), on=['Month','ZIP_Code'], how='left')
+            .join(BLS_infl.with_columns(pl.col('Month').dt.offset_by('1mo').dt.month_end()), on='Month', how='left')
+            .join(FHFA_house_price_index.with_columns(pl.col('Month').dt.offset_by('2mo').dt.month_end()), on=['Month','ZIP_Code'], how='left')
+            .join(FHFA_house_price_index.with_columns(pl.col('Month').dt.offset_by('2mo').dt.month_end()), left_on=['First_Payment_Month','ZIP_Code'], right_on=['Month','ZIP_Code'], how='left',suffix='_Orig')
+            .join(FHFA_house_price_index.with_columns(pl.col('Month').dt.offset_by('14mo').dt.month_end()), left_on=['Month','ZIP_Code'], right_on=['Month','ZIP_Code'], how='left',suffix='_year')
             .join(FM_30yr_FRM_Rate, on='Month', how='left')
             .join(FM_30yr_FRM_Rate, left_on='First_Payment_Month', right_on ='Month', how='left', suffix='_Orig')
     )
@@ -217,7 +216,7 @@ def add_econ_features(merged_data: pl.DataFrame) -> pl.DataFrame:
         (pl.col('HP_Index') / pl.col('HP_Index_year') - 1).alias('HPI_Change_yoy'),
         
         # Log median annual income
-        pl.col('Median_Ann_Income').log10().alias('Log_Median_Ann_Income')
+        (pl.col('Median_Ann_Income') + 1).log10().alias('Log_Median_Ann_Income')
     ])
 
     merged_data = add_comb_features(merged_data)

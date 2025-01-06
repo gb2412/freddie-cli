@@ -164,6 +164,11 @@ def change_column_encoding(orig_data, perf_data):
             .str.strptime(pl.Date, format="%Y%m")
             .dt.month_end()
         )
+    
+    # Convert ZIP Code to 3 digits
+    orig_data = orig_data.with_columns(
+        pl.col("ZIP_Code").str.slice(0, 3)
+    )
 
     # Define missing value encodings for each column in origination data
     orig_missing_map = {

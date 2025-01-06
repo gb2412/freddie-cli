@@ -39,10 +39,19 @@ def sample_selection(data_dir: Path,
             (pl.col('Month').dt.strftime('%Y-%m').is_in(obs_dates) &
             # Select only mortgages that have NOT incurred in any Termination Event at the respective Observation Date
             pl.col('Zero_Balance_Code').is_null() &
-             # Select only 0 DPD, 30 DPD or 60 DPD
+            # Select only 0 DPD, 30 DPD or 60 DPD
             pl.col('Current_Delinquency_Status').is_in(['0','1','2']))
         )
         df = pl.concat([df, df_temp])
+
+        # Sample from each month and concat
+        # for month in train_obs_dates:
+        #     month_sample = (
+        #         data_train
+        #         .filter(pl.col('Month').dt.strftime('%Y-%m') == month)
+        #         .sample(n=train_size)
+        #     )
+        #     data_train_sampled = data_train_sampled.vstack(month_sample)
     
     log_info(f"Imported sample of shape: {df.shape}")
     

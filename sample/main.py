@@ -35,8 +35,8 @@ def main(refresh:bool,
     # Check if refresh is called
     if not refresh:
         # Define train and test paths
-        train_path = Path(config['paths']['dev_sample']) / 'train_binary.parquet' if binary else 'train.parquet'
-        test_path = Path(config['paths']['dev_sample']) / 'test_binary.parquet' if binary else 'test.parquet'
+        train_path = Path(config['paths']['dev_sample']) / 'train_binary.parquet' if binary else Path('train.parquet')
+        test_path = Path(config['paths']['dev_sample']) / 'test_binary.parquet' if binary else Path('test.parquet')
         # Check if train and test sets already exist
         if train_path.exists() and test_path.exists():
             print(f"Train and test {'binary' if binary else ''} sets already exist. Use --refresh to resample.")

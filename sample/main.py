@@ -51,11 +51,14 @@ def main(refresh:bool,
                                     config['sample']['dev_columns']['economic_columns'] \
                                     if use_econ_data else config['sample']['dev_columns']['mortgage_columns'],
                                 train_size=config['sample']['train_size'],
+                                test_size=config['sample']['test_size'],
                                 categorical_encodings=config['sample']['features_encodings'],
+                                num_thresholds=config['sample']['num_thresholds'],
                                 output_path=Path(config['paths']['dev_sample']),
                                 binary_output=binary,
                                 use_economic_data=use_econ_data,
-                                econ_data_path=Path(config['paths']['economic_data']))
+                                econ_data_path=Path(config['paths']['economic_data']),
+                                seed=config['sample']['seed'])
 
     # Call garbage collector to free up memory
     gc.collect()

@@ -176,11 +176,14 @@ Below is a detailed description of all available configuration settings.
 |-------|-------------|
 | `sample.train_obs_dates` | List of observation dates "YYYY-MM" for training set |
 | `sample.test_obs_dates` | List of observation dates "YYYY-MM" for test set |
-| `sample.train_size` | Training set size |
+| `sample.train_size` | Number of observations in the train set, equally devided by quarters and dates. Set to `null` to select entire set. |
+| `sample.test_size` | Number of observations in the test set, equally devided by quarters and dates. Set to `null` to select entire set. |
+| `sample.seed` | Random seed for sampling reproducibility. Set to `null` for no seed. |
 | `sample.dev_columns.mortgage_columns` | List of loan-level features to include |
 | `sample.dev_columns.economic_columns` | List of economic features to include |
 | `sample.features_encodings.categorical_mappings` | Dictionary of values mappings for categorical features |
 | `sample.features_encodings.yn_columns` | List of binary Yes/No features |
+| `sample.num_thresholds` | Number of thresholds to use for binning continous features in binary sampling |
 
 #### [Model Training Settings](config.yml#L136)
 | Field | Description |
@@ -197,7 +200,9 @@ This makes it an extremely valuable resource, but due to its size, you may exper
 |-------|-------------|
 | `process.batch_size` | Keep the number of loans processed per time around the default value |
 | `sample.train_size` | A large training set can cause OOM errors during model fitting |
+| `sample.train_size` | A large test set can cause OOM errors during inference |
 | `sample.dev_columns` | The number of features can greatly increase the size of training and test sets, especially in the case of binary samples |
+| `sample.num_thresholds` | The number of binary features increases linearly in the number of thresholds |
 
 
 

@@ -35,7 +35,9 @@ sample:
   test_obs_dates:
     - "2022-03"
     - "2022-06"
-  train_size: 1500000  # Number of observations to include in the training set, equally devided by date.
+  train_size: 1500000  # Number of observations to include in the training set, equally devided by quarter and date. Set "null" for entire set.
+  test_size: 3000000  # Number of observations to include in the test set, equally devided by quarter and date. Set "null" for entire set.
+  seed: 2001  # Random seed for sampling. Set "null" for no seed.
   dev_columns: # Features to include in the development dataset
     mortgage_columns:
       - Loan_Num
@@ -132,6 +134,7 @@ sample:
       - Sup_Conforming_Flag
       - Step_Modification_Flag
       - Delinquency_Disaster_Flag
+  num_thresholds: 20  # Number of thresholds to use for binning continous features
 
 # Models fitting settings 
 train:

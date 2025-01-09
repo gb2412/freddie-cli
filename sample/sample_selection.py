@@ -8,9 +8,37 @@ from utils.logging import Colors, log_info
 from process.economic_data_processing import get_merged_econ_data, add_econ_features
 
 
-def sample_selection(data_dir: Path,
-                     years_quarters_list: List[Tuple[int, int]],
-                     obs_dates: List[str]) -> pl.DataFrame:
+def sample_set(df: pl.DataFrame,
+               obs_dates: list,
+               size: int,
+               seed: int) -> pl.DataFrame:
+    
+    # Filter for relevant observation dates
+    df = df.filter(pl.col('Month').dt.strftime('%Y-%m').is_in(obs_dates))
+
+    # Sample from each observation date if required
+    if size:
+
+        # Partition by observation date
+        df_parts = df.partition_by('Month')
+
+        # Sample from each partition and concatenate
+        # sample entire partition if size > partition size
+        df = pl.concat([part.sample(
+                            min(size, part.shape[0]), 
+                            seed=seed) 
+                        for part in df_parts])
+
+    return df
+
+
+def sample_train_test_sets(data_dir: Path,
+                           years_quarters_list: List[Tuple[int, int]],
+                           train_obs_dates: list,
+                           test_obs_dates: list,
+                           train_size: int,
+                           test_size: int,
+                           seed: int) -> Tuple[pl.DataFrame, pl.DataFrame]:
     '''
     Sample the year-quarter combinations and observation dates.
     Exclude mortgages in default or with zero balance at the observation date.
@@ -22,11 +50,18 @@ def sample_selection(data_dir: Path,
     
     '''
 
-    log_info(f"Start sample import for {len(years_quarters_list)} quarters and {len(obs_dates)} observation dates")
+    log_info(f"{Colors.OKGREEN}Start sample import for {len(years_quarters_list)} quarters{Colors.ENDC}")
 
-    # Load data, select samples and concatenate
-    df = pl.DataFrame()
+    # Definine training and test data frames
+    df_train, df_test = pl.DataFrame(), pl.DataFrame()
 
+    # Definie training and test sample size:
+    # get equal number of loans for each quarter and observation date
+    # if None entire sample is used
+    train_size = train_size // len(years_quarters_list) // len(train_obs_dates) if train_size else None
+    test_size = test_size // len(years_quarters_list) // len(test_obs_dates) if test_size else None
+
+    # Loop over year-quarter combinations
     for year, quarter in years_quarters_list:
         try:
             df_temp = pl.read_parquet(data_dir / f'{year}Q{quarter}')
@@ -35,27 +70,27 @@ def sample_selection(data_dir: Path,
 
         # Select the sample
         df_temp = df_temp.filter(
-            # Select observation dates
-            (pl.col('Month').dt.strftime('%Y-%m').is_in(obs_dates) &
-            # Select only mortgages that have NOT incurred in any Termination Event at the respective Observation Date
+            # Filter only relevant observation dates
+            (pl.col('Month').dt.strftime('%Y-%m').is_in(train_obs_dates + test_obs_dates) &
+            # Filter only mortgages that have NOT incurred in any Termination Event at the respective observation date
             pl.col('Zero_Balance_Code').is_null() &
-            # Select only 0 DPD, 30 DPD or 60 DPD
+            # Filter only 0 DPD, 30 DPD or 60 DPD
             pl.col('Current_Delinquency_Status').is_in(['0','1','2']))
         )
-        df = pl.concat([df, df_temp])
+        
+        # Sample training set
+        df_train_temp = sample_set(df_temp, train_obs_dates, train_size, seed)
+        # Concatenate to the main training set
+        df_train = pl.concat([df_train, df_train_temp])
 
-        # Sample from each month and concat
-        # for month in train_obs_dates:
-        #     month_sample = (
-        #         data_train
-        #         .filter(pl.col('Month').dt.strftime('%Y-%m') == month)
-        #         .sample(n=train_size)
-        #     )
-        #     data_train_sampled = data_train_sampled.vstack(month_sample)
-    
-    log_info(f"Imported sample of shape: {df.shape}")
-    
-    return df
+        # Sample test set
+        df_test_temp = sample_set(df_temp, test_obs_dates, test_size, seed)
+        # Concatenate to the main test set
+        df_test = pl.concat([df_test, df_test_temp])
+
+    log_info(f"Train sample shape: {df_train.shape}, Test sample shape: {df_test.shape}")
+
+    return df_train, df_test
 
 
 def add_economic_features(df: pl.DataFrame,
@@ -235,8 +270,8 @@ def cat_var_encoding(df: pl.DataFrame,
 
 
 def create_thresholds(series: pl.Series,
-                      num_thresholds: int = 20,
-                      is_credit_score: bool = False) -> np.ndarray:
+                      num_thresholds: int,
+                      is_credit_score: bool) -> np.ndarray:
     '''
     Create percentile thresholds for a continuous variable.
 
@@ -257,7 +292,8 @@ def create_thresholds(series: pl.Series,
     return np.unique(np.round(thresholds, 2))
 
 
-def cont_var_encoding(df: pl.DataFrame) -> pl.DataFrame:
+def cont_var_encoding(df: pl.DataFrame,
+                      num_thresholds :int) -> pl.DataFrame:
     '''
     Apply binary econding to continous columns based on percentile thresholds.
 
@@ -278,6 +314,7 @@ def cont_var_encoding(df: pl.DataFrame) -> pl.DataFrame:
         # Call create thresholds function
         thresholds = create_thresholds(
             df[col], 
+            num_thresholds,
             is_credit_score=(col == 'Credit_Score')
         )
         # Create binary columns: 1 if value <= threshold, 0 otherwise
@@ -316,8 +353,41 @@ def save_sample_to_disk(data_train: pl.DataFrame,
         data_train.write_parquet(output_path / 'train.parquet')
         data_test.write_parquet(output_path / 'test.parquet')
 
-    log_info(f"Saved train and test samples to {output_path}")
+    log_info(f"{Colors.OKGREEN}Saved train and test samples{Colors.ENDC} to {output_path}")
 
+
+def process_sample(df: pl.DataFrame,
+                   dev_columns: list,
+                   categorical_encodings: dict,
+                   num_thresholds: int,
+                   binary_output: bool,
+                   use_economic_data: bool,
+                   econ_data_path: Path,
+                   is_train_set: bool) -> pl.DataFrame:
+
+
+    log_info(f"{Colors.OKGREEN}Start {'training' if is_train_set else 'test'} sample processing{Colors.ENDC}")
+
+    # Add economic features
+    if use_economic_data:
+        df = add_economic_features(df, econ_data_path)
+
+    # Select features
+    df = features_selection(df, dev_columns)
+
+    if binary_output:
+        # Encode missing values
+        df = missing_values_encoding(df)
+
+        # Encode categorical variables
+        df = cat_var_encoding(df, categorical_encodings)
+
+    if binary_output:
+        # Encode continuous variables
+        df = cont_var_encoding(df, num_thresholds)
+
+    return df
+    
 
 def process_and_save_train_test(data_path: Path,
                                 years_quarters_list: list,
@@ -325,11 +395,14 @@ def process_and_save_train_test(data_path: Path,
                                 test_obs_dates:list,
                                 dev_columns: list,
                                 train_size: int,
+                                test_size: int,
                                 categorical_encodings: dict,
+                                num_thresholds: int,
                                 output_path: Path,
                                 binary_output: bool=False,
                                 use_economic_data: bool=False,
-                                econ_data_path: Path=None) -> Tuple[pl.DataFrame, pl.DataFrame]:
+                                econ_data_path: Path=None,
+                                seed :int=None) -> Tuple[pl.DataFrame, pl.DataFrame]:
     '''
     Main sampling function. Load, process and save the train and test samples.
     Differentiate bewteen binary and regular sample creation.
@@ -348,32 +421,38 @@ def process_and_save_train_test(data_path: Path,
     '''
 
     # Load the developemnt sample
-    df = sample_selection(data_path, years_quarters_list, train_obs_dates+test_obs_dates)
+    df_train, df_test = sample_train_test_sets(data_path, 
+                                               years_quarters_list, 
+                                               train_obs_dates, 
+                                               test_obs_dates,
+                                               train_size,
+                                               test_size,
+                                               seed)
 
-    # Add economic features
-    if use_economic_data:
-        df = add_economic_features(df, econ_data_path)
-
-    # Select features
-    df = features_selection(df, dev_columns)
-
-    if binary_output:
-        # Encode missing values
-        df = missing_values_encoding(df)
-
-        # Encode categorical variables
-        df = cat_var_encoding(df, categorical_encodings)
-
-    # Train-test split
-    data_train, data_test = train_test_split(df, train_obs_dates, test_obs_dates, train_size)
-
-    if binary_output:
-        # Encode continuous variables separately for train and test
-        # to avoid data leakage in computing percentiles
-        data_train = cont_var_encoding(data_train)
-        data_test = cont_var_encoding(data_test)
+    # Process training sample
+    df_train = process_sample(df_train, 
+                              dev_columns, 
+                              categorical_encodings, 
+                              num_thresholds,
+                              binary_output, 
+                              use_economic_data, 
+                              econ_data_path,
+                              is_train_set=True)
+    
+    # Process test sample
+    df_test = process_sample(df_test, 
+                             dev_columns, 
+                             categorical_encodings,
+                             num_thresholds,
+                             binary_output, 
+                             use_economic_data, 
+                             econ_data_path,
+                             is_train_set=False)
 
     # Saving datasets to parquet
-    save_sample_to_disk(data_train, data_test, output_path, binary_output)
+    save_sample_to_disk(df_train, 
+                        df_test, 
+                        output_path, 
+                        binary_output)
 
-    return data_train, data_test
+    return df_train, df_test
